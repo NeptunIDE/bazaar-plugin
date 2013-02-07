@@ -87,12 +87,21 @@ public class BazaarSCM extends SCM implements Serializable {
     private final BazaarRepositoryBrowser browser;
     private final boolean checkout;
 
+    private final String caBundle;
+    private final String clientBundle;
+
     @DataBoundConstructor
-    public BazaarSCM(String source, boolean cleantree, BazaarRepositoryBrowser browser, boolean checkout) {
+    public BazaarSCM(String source, boolean cleantree, BazaarRepositoryBrowser browser, boolean checkout, String caBundle, String clientBundle) {
         this.source = source;
         this.cleantree = cleantree;
         this.browser = browser;
         this.checkout = checkout;
+        this.caBundle = caBundle;
+        this.clientBundle = clientBundle;
+    }
+    
+    public BazaarSCM(String source, boolean cleantree, BazaarRepositoryBrowser browser, boolean checkout) {
+        this(source, cleantree, browser, false, "", "");
     }
 
     public BazaarSCM(String source, boolean cleantree, BazaarRepositoryBrowser browser) {
@@ -106,6 +115,14 @@ public class BazaarSCM extends SCM implements Serializable {
      */
     public String getSource() {
         return source;
+    }
+    
+    public String getCaBundle() {
+        return caBundle;
+    }
+    
+    public String getClientBundle() {
+        return clientBundle;
     }
 
     /**
@@ -148,12 +165,14 @@ public class BazaarSCM extends SCM implements Serializable {
 
             starter = starter.cmds(bzr_cmd, "revision-info", "-d", root);
             // The launcher should already have the right vars!
-            starter = starter.envs(EnvVars.masterEnvVars);
+            // starter = starter.envs(EnvVars.masterEnvVars);
+            starter = starter.envs("CURL_CA_BUNDLE="+caBundle, "CURL_CLIENT_BUNDLE="+clientBundle);
             starter = starter.stdout(stdout);
             starter = starter.stderr(stderr);
             // not needed without workspaces : -d starter = starter.pwd(workspace);
             final int ret = starter.join();
-            final String info_output = "NeptunIDE modified: bzr revision-info -d " + root + " returned " + ret + ". Command output: \"" + stdout.toString() + "\" stderr: \"" + stderr.toString() + "\"";
+            final String info_output = "bzr revision-info -d " + root + " returned " + ret + ". Command output: \"" + stdout.toString() + "\" stderr: \"" + stderr.toString() + "\"";
+
             if (ret != 0) {
                 logger.warning(info_output);
             } else {
