@@ -148,12 +148,12 @@ public class BazaarSCM extends SCM implements Serializable {
 
             starter = starter.cmds(bzr_cmd, "revision-info", "-d", root);
             // The launcher should already have the right vars!
-            // starter = starter.envs(EnvVars.masterEnvVars);
+            starter = starter.envs(EnvVars.masterEnvVars);
             starter = starter.stdout(stdout);
             starter = starter.stderr(stderr);
             // not needed without workspaces : -d starter = starter.pwd(workspace);
             final int ret = starter.join();
-            final String info_output = "bzr revision-info -d " + root + " returned " + ret + ". Command output: \"" + stdout.toString() + "\" stderr: \"" + stderr.toString() + "\"";
+            final String info_output = "NeptunIDE modified: bzr revision-info -d " + root + " returned " + ret + ". Command output: \"" + stdout.toString() + "\" stderr: \"" + stderr.toString() + "\"";
             if (ret != 0) {
                 logger.warning(info_output);
             } else {
