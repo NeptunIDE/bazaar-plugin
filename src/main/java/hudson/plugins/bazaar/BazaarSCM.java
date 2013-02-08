@@ -206,7 +206,7 @@ public class BazaarSCM extends SCM implements Serializable {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             String version = "revid:" + oldRevisionState.getRevId() + "..revid:" + newRevisionState.getRevId();
             if ((ret = launcher.launch().cmds(getDescriptor().getBzrExe(), "log", "-v", "-r", version, "--long", "--show-ids")
-                    .envs(EnvVars.masterEnvVars).stdout(baos).pwd(workspace).join()) != 0) {
+                    .envs(EnvVars.masterEnvVars).envs("CURL_CA_BUNDLE="+caBundle, "CURL_CLIENT_BUNDLE="+clientBundle).stdout(baos).pwd(workspace).join()) != 0) {
                 logger.log(Level.WARNING, "bzr log -v -r returned {0}", ret);
             } else {
                 FileOutputStream fos = new FileOutputStream(changeLog);
